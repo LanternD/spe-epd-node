@@ -32,7 +32,7 @@ class AppInstagramShowcase:
         img = Image.open(pic_path)
         self.epd_drv.show_one_image(img)
 
-    def app_pipeline(self, interval=timedelta(minutes=10)):
+    def app_pipeline(self, interval=timedelta(minutes=9, seconds=58)):
         """The rountine to continuously display the photos."""
 
         def is_working_hour(dt):
