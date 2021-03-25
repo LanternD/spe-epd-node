@@ -3,10 +3,9 @@ import json
 import logging
 import os
 
-from PIL import Image, ImageDraw, ImageFont
-
 from IT8951 import constants
 from IT8951.display import AutoEPDDisplay
+from PIL import Image, ImageDraw, ImageFont
 
 EPD7IN8WIDTH = 1872
 EPD7IN8HEIGHT = 1404
@@ -15,6 +14,7 @@ EPD7IN8VCOM = -1.4  # Find this number on the cable
 
 
 class EPD7In8Driver:
+    """Provide functions for showing figures on the screen."""
     def __init__(self, config, virtual=False, rotate=None):
         self.width = EPD7IN8WIDTH
         self.height = EPD7IN8HEIGHT
@@ -37,8 +37,8 @@ class EPD7In8Driver:
         """Input: img, an PIL object"""
         self.clear_frame()
 
-        frame_width = 1760
-        frame_height = 1380
+        frame_width = EPD7IN8WIDTH - 72  # leave some margin for visibility.
+        frame_height = EPD7IN8HEIGHT - 24 
         if img_orig.size[0]/img_orig.size[1] > frame_width/frame_height:
             # left and right are the lower bound
             ratio = frame_width / img_orig.size[0]
