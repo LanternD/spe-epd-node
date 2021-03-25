@@ -4,15 +4,15 @@ import time
 from datetime import datetime, timedelta
 from os.path import expanduser
 
-from PIL import Image, ImageDraw, ImageFont
-
 from EPD7In8Driver import EPD7In8Driver
+from PIL import Image, ImageDraw, ImageFont
 from utils import get_file_list
 
 
 class AppInstagramShowcase:
     def __init__(self, config, drv):
         self.epd_drv = drv
+        self.config = config
         self.home_folder = expanduser("~") + "/"
         self.ins_folder = self.home_folder + config["instagram_photo_dir"]
         self.photo_list = self.get_ins_photo_list()
@@ -35,6 +35,7 @@ class AppInstagramShowcase:
     def app_pipeline(self, interval=timedelta(minutes=9, seconds=58)):
         """The rountine to continuously display the photos."""
 
+        new_day = False
         def is_working_hour(dt):
             return (8, 59) < (dt.hour, dt.minute) < (23, 30)
 
@@ -42,10 +43,22 @@ class AppInstagramShowcase:
         while True:
             # Check every 15 seconds, update only during 9:00 - 23:30
             time_now = datetime.now()
+            if new_day and (8, 40) < (time_now.hour, time_now.minute) < (8, 50):
+                # re-initialize the screen, otherwise the screen do not work.
+                logging.info('Re-initialize 7.8 inch display.')
+                self.epd_drv = None
+                self.epd_drv = EPD7In8Driver(config=self.config, virtual=True)
+                new_day = False
+
+            if new_day is False and not is_working_hour(time_now) and time_now.hour >= 23:
+                # Set the flag, for re-intialization for the next day
+                new_day = True
+
             if time_now - previous_update > interval and is_working_hour(time_now):
                 rand_path = random.choice(self.photo_list)
                 time_str = time_now.strftime("%x %X")
                 logging.info(f"[{time_str}] {rand_path}")
                 self.show_one_ins_image(self.ins_folder + rand_path)
                 previous_update = time_now
+
             time.sleep(15)
