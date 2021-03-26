@@ -47,7 +47,7 @@ class AppInstagramShowcase:
                 # re-initialize the screen, otherwise the screen do not work.
                 logging.info('Re-initialize 7.8 inch display.')
                 self.epd_drv = None
-                self.epd_drv = EPD7In8Driver(config=self.config, virtual=True)
+                self.epd_drv = EPD7In8Driver(config=self.config, virtual=False)
                 new_day = False
 
             if new_day is False and not is_working_hour(time_now) and time_now.hour >= 23:
